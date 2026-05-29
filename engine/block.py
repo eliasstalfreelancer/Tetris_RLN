@@ -42,6 +42,9 @@ class Block:
             self.rotation_sate = 0
 
     def undo_rotation(self):
+
         self.rotation_sate -= 1
-        if self.rotation_sate == 0:
-            self.rotation_sate = len(self.cells) - 1 
+
+        if self.rotation_sate < 0:
+
+            self.rotation_sate = len(self.cells) - 1

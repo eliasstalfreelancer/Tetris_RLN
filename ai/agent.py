@@ -2,7 +2,7 @@ from ai.model import Model
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-class Agent:
+class Agent():
     def __init__(self,state_size):
         self.model = Model(state_size)
         

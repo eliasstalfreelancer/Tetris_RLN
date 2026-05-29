@@ -137,6 +137,7 @@ class Game:
         # make the block 
         tiles = self.current_block.get_cell_positions()
         for position in tiles:
+            #print(position.row, position.column)
             self.grid.grid[position.row][position.column] = self.current_block.id
         self.current_block =  self.next_block
         self.next_block = self.get_random_block()
