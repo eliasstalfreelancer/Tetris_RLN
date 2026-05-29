@@ -14,6 +14,9 @@ class Grid:
         # colors
         self.colors = Colors.get_cell_colors()
 
+    
+
+    
     def print_grid(self):
         #Displays current array 
         for row in range(self.num_rows):

@@ -3,7 +3,9 @@ import sys
 from engine.game import Game
 from engine.colors import Colors
 from engine.render import *
+from engine.position import Position
 import time
+from engine.grid import Grid
 
 
 
@@ -17,13 +19,9 @@ pg.display.set_caption("Tetris")
 
 # framerate variable 
 clock = pg.time.Clock()
-games = [Game() for _ in range(10)]
 game = Game()
 render = Render()
-GAME_UPDATE = pg.USEREVENT
-curent_speed = Game().game_speed
-pg.time.set_timer(GAME_UPDATE,curent_speed)
-
+grid = Grid()
 model_best_score = 0
 # Game loop
 while True:
@@ -39,26 +37,25 @@ while True:
         if event.type == pg.KEYDOWN:
 
             if event.key == pg.K_LEFT:
-                game.prefrom_action(0)
+                game.preform_action(0)
 
             if event.key == pg.K_RIGHT:
-                game.prefrom_action(1)
+                game.preform_action(1)
 
             if event.key == pg.K_UP:
-                game.prefrom_action(2)
+                game.preform_action(2)
 
             if event.key == pg.K_DOWN:
-                game.prefrom_action(3)
-
+                game.preform_action(3)
+    
+    
     # UPDATE GAME
-    for game in games:
-        game.update(dt)
-
+    game.update(dt)
+    
     # render
-    render_game(screen)
+    render_game(screen,game)
+  
     
-    games[model_best_score].draw(screen)
     
-    pg.display.update()
 
     

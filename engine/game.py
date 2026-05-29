@@ -1,5 +1,6 @@
 from engine.grid import Grid
 from engine.blocks import *
+from engine.block import *
 import random
 import math
 
@@ -16,19 +17,54 @@ class Game:
         self.frames_per_sec = 60
         self.game_speed = int(1000/(self.frames_per_sec*(0.0088 * (math.e ** (0.3532 * self.level)))))# game_speed = 0.0088e^0.3532*level
         self.fall_timer = 0
+        self.reward = 0
     
+    def get_reward(self):
+        return self.reward
 
+    def get_state(self):
+
+        temp_grid = [row[:] for row in self.grid.grid]
+
+        tiles = self.current_block.get_cell_positions()
+
+        for tile in tiles:
+
+            if 0 <= tile.row < self.grid.num_rows and 0 <= tile.column < self.grid.num_cols:
+
+                temp_grid[tile.row][tile.column] = self.current_block.id
+
+        state = []
+
+        for row in temp_grid:
+
+            for cell in row:
+
+                state.append(cell)
+
+        return state
+
+    
     def update_score(self,line_cleared,level,move_down_points):
         if line_cleared == 1:
             self.score += 40*(level+1)# 40*(level +1) for one line clear
+            self.reward = 40*(level+1)
         elif line_cleared ==2 :
             self.score += 100*(level+1) # 100*(level +1) for two line clear
+            self.reward = 100*(level+1)
         elif line_cleared == 3: 
             self.score += 300*(level+1) # 300*(level +1) for three line clear
+            self.reward = 300*(level+1)
         elif line_cleared == 4:
             self.score += 400*(level+1) # 400*(level +1) for one line clear
+            self.reward = 400*(level+1)
         self.score += move_down_points
-    
+        self.reward = move_down_points
+
+    def simulation_update(self):
+
+        self.move_down()
+
     def update(self, dt):
 
         if self.game_over:
@@ -46,7 +82,7 @@ class Game:
         
         self.line_tracker += line_cleared
         if line_cleared > 0:
-            print(self.line_tracker)
+
             if self.line_tracker == 10:
                 self.level += 1
                 self.game_speed = int(1000*self.frames_per_sec*(0.0088 * (math.e ** (0.3532 * self.level))))
@@ -81,7 +117,7 @@ class Game:
               self.lock_block()
 
 
-    def prefrom_action(self,action):
+    def preform_action(self,action):
         if action == 0:
             self.move_left()
 
@@ -92,6 +128,7 @@ class Game:
             self.rotate()
 
         elif action == 3:
+            self.update_score(0,0,1)
             self.move_down()
 
         
@@ -112,12 +149,14 @@ class Game:
             self.game_over = True
 
     def reset(self):
+        self.game_over = False
         self.grid.reset()
         self.blocks = [OBlock(),IBlock(),JBlock(),LBlock(),SBlock(),TBlock(),ZBlock()]
         self.current_block = self.get_random_block()
         self.next_block = self.get_random_block()
         self.level = 1
         self.line_tracker = 0
+        self.score = 0
         self.game_speed = 1000*self.frames_per_sec*(0.0088 * (math.e ** (0.3532 * self.level)))
 
     def block_fits(self):

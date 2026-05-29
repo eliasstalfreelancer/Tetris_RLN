@@ -53,14 +53,14 @@ class Render:
         screen.blit(self.game_over_surface,self.rect_box_cord)#gameover text
     
     def score_box(self,screen):
-        pg.draw.rect(screen,Colors.light_blue,self.score_rect,0,10) #score box
+        pg.draw.rect(screen,Colors.light_blue,self.score_rect,0,10)#score box
     
     def next_box(self,screen):
-        pg.draw.rect(screen,Colors.light_blue,self.next_rect,0,10) #next box
+        pg.draw.rect(screen,Colors.light_blue,self.next_rect,0,10)#next box
     
-def render_game(screen):
+def render_game(screen,game):
         render = Render()
-        game = Game()
+        
         render.background(screen)
         render.score_text(screen)
         render.next_text(screen)
@@ -71,3 +71,5 @@ def render_game(screen):
         render.next_box(screen)
         render.level_box(screen)
         render.level_vaule_render(screen,game.level)
+        game.draw(screen)
+        pg.display.update()

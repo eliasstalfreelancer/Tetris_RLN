@@ -28,9 +28,10 @@ class Block:
         return moved_tiles
     
     def draw(self,screen,x_offset,y_offset):
-        tiles = self.get_cell_positions()# takes from potions information from the blocks and adds the offset to moved the tiles but them in a 
+        self.tiles = self.get_cell_positions()# takes from potions information from the blocks and adds the offset to moved the tiles but them in a 
+        
         # list on where to draw them 
-        for tile in tiles:
+        for tile in self.tiles:
             tile_rect = pg.Rect(tile.column * self.cell_size +x_offset, tile.row *self.cell_size +y_offset,
             self.cell_size-1 ,self.cell_size-1 )
             pg.draw.rect(screen,self.colors[self.id],tile_rect)
