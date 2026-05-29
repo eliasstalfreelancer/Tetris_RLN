@@ -1,11 +1,9 @@
 import pygame as pg
 import sys
 from engine.game import Game
-from engine.colors import Colors
 from engine.render import *
-from engine.position import Position
-import time
-from engine.grid import Grid
+
+
 
 
 
@@ -21,7 +19,7 @@ pg.display.set_caption("Tetris")
 clock = pg.time.Clock()
 game = Game()
 render = Render()
-grid = Grid()
+
 model_best_score = 0
 # Game loop
 while True:
