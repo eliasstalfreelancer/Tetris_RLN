@@ -7,10 +7,23 @@ class ReplayBuffer:
 
         self.memory = deque(maxlen=max_size)
 
-    def add(self, state, action, reward, next_state, done):
+    def  add(
+        self,
+        state,
+        action,
+        reward,
+        next_state,
+        done
+    ):
 
         self.memory.append(
-            (state, action, reward, next_state, done)
+            (
+                state,
+                action,
+                reward,
+                next_state,
+                done
+            )
         )
 
     def sample(self, batch_size):

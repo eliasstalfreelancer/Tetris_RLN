@@ -9,6 +9,12 @@ class Agent():
     def __init__(self,state_size):
         self.model = Model(state_size)
 
+        self.target_model = Model(state_size)
+
+        self.target_model.load_state_dict(
+            self.model.state_dict()
+            )   
+
         self.optimizer = optim.Adam(
             self.model.parameters(),
             lr=0.001
@@ -23,7 +29,13 @@ class Agent():
         self.epsilon_decay = 0.995
 
         self.epsilon_min = 0.01
+
         
+    def update_target_model(self):
+
+        self.target_model.load_state_dict(
+            self.model.state_dict()
+        )
     
     def action(self, state):
 
@@ -44,57 +56,100 @@ class Agent():
 
         return action
 
-    def train(self, state, action, reward, next_state, done):
+    def train(self, batch):
 
+        states = []
+        actions = []
+        rewards = []
+        next_states = []
+        dones = []
+
+        # UNPACK BATCH
+        for (
+            state,
+            action,
+            reward,
+            next_state,
+            done
+        ) in batch:
+
+            states.append(state)
+            actions.append(action)
+            rewards.append(reward)
+            next_states.append(next_state)
+            dones.append(done)
+
+        # CONVERT TO TENSORS
+        states = torch.tensor(
+            states,
+            dtype=torch.float32
+        )
+
+        actions = torch.tensor(actions)
+
+        rewards = torch.tensor(
+            rewards,
+            dtype=torch.float32
+        )
+
+        next_states = torch.tensor(
+            next_states,
+            dtype=torch.float32
+        )
+
+        dones = torch.tensor(
+            dones,
+            dtype=torch.float32
+        )
             # CONVERT TO TENSORS
-            state = torch.tensor(
-                state,
-                dtype=torch.float32
-            ).unsqueeze(0)
+        state = torch.tensor(
+            state,
+            dtype=torch.float32
+        ).unsqueeze(0)
 
-            next_state = torch.tensor(
-                next_state,
-                dtype=torch.float32
-            ).unsqueeze(0)
+        next_state = torch.tensor(
+            next_state,
+            dtype=torch.float32
+        ).unsqueeze(0)
 
-            reward = torch.tensor(
-                reward,
-                dtype=torch.float32
+        reward = torch.tensor(
+            reward,
+            dtype=torch.float32
+        )
+
+        # CURRENT Q VALUES
+        current_q = self.model(state)
+
+        # NEXT Q VALUES
+        next_q = self.target_model(next_states)
+
+        # TARGET
+        target_q = current_q.clone()
+
+        if done:
+
+            target_value = reward
+
+        else:
+
+            target_value = reward + (
+                self.gamma * torch.max(next_q)
             )
 
-            # CURRENT Q VALUES
-            current_q = self.model(state)
+        # UPDATE TARGET FOR TAKEN ACTION
+        target_q[0][action] = target_value
 
-            # NEXT Q VALUES
-            next_q = self.model(next_state)
+        # LOSS
+        loss = self.loss_fn(current_q, target_q)
 
-            # TARGET
-            target_q = current_q.clone()
+        # BACKPROP
+        self.optimizer.zero_grad()
 
-            if done:
+        loss.backward()
 
-                target_value = reward
+        self.optimizer.step()
 
-            else:
-
-                target_value = reward + (
-                    self.gamma * torch.max(next_q)
-                )
-
-            # UPDATE TARGET FOR TAKEN ACTION
-            target_q[0][action] = target_value
-
-            # LOSS
-            loss = self.loss_fn(current_q, target_q)
-
-            # BACKPROP
-            self.optimizer.zero_grad()
-
-            loss.backward()
-
-            self.optimizer.step()
-
-            return loss.item()
+        return loss.item()
 
     def decay_epsilon(self):
 

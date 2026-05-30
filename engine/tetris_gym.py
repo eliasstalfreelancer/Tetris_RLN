@@ -26,14 +26,16 @@ class Tetris_gym:
         return self.game.get_state()
     
     def step(self,action):
-        
+        self.game.line_tracker_for_ai
         self.game.preform_action(action)
         self.game.simulation_update()
         state = self.game.get_state()
         reward = self.game.get_reward()
+        linetracker = self.game.line_tracker_for_ai
+        
         done = self.game.game_over
 
-        return state, reward, done
+        return state, reward, done, 
     
     def render(self, render_delay = 0):
         time.sleep(render_delay)

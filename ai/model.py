@@ -9,19 +9,19 @@ class Model(nn.Module):
 
         super().__init__()
 
-        self.fc1 = nn.Linear(input, 128)
+        self.fc1 = nn.Linear(input, 128) # input layers
 
-        self.fc2 = nn.Linear(128, 128)
+        self.fc2 = nn.Linear(128, 128)  #hidden layer
 
-        self.output = nn.Linear(128, 4)
+        self.output = nn.Linear(128, 4) #output layer
 
     def forward(self, x): #predict 
 
-        x = F.relu(self.fc1(x))
+        x = F.relu(self.fc1(x)) #activation layer
 
-        x = F.relu(self.fc2(x))
+        x = F.relu(self.fc2(x)) # activation layer
 
-        x = self.output(x)
+        x = self.output(x) #output layer
 
         return x 
 

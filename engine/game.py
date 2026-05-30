@@ -13,7 +13,8 @@ class Game:
         self.game_over = False
         self.score = 0
         self.level = 1
-        self.line_tracker = 0
+        self.line_tracker_for_level = 0
+        self.line_tracker_for_ai = 0
         self.frames_per_sec = 60
         self.game_speed = int(1000/(self.frames_per_sec*(0.0088 * (math.e ** (0.3532 * self.level)))))# game_speed = 0.0088e^0.3532*level
         self.fall_timer = 0
@@ -80,13 +81,14 @@ class Game:
 
     def update_level(self, line_cleared):
         
-        self.line_tracker += line_cleared
+        self.line_tracker_for_level += line_cleared 
         if line_cleared > 0:
 
-            if self.line_tracker == 10:
+            if self.line_tracker_for_level == 10:
                 self.level += 1
                 self.game_speed = int(1000*self.frames_per_sec*(0.0088 * (math.e ** (0.3532 * self.level))))
-                self.line_tracker = 0
+                self.line_tracker_for_level = 0
+                
                 
         
 
@@ -144,6 +146,11 @@ class Game:
         rows_cleared =self.grid.clear_full_rows( )
         self.update_level(rows_cleared)
         self.update_score(rows_cleared,self.level,0)
+        self.line_tracker_for_ai += 1 #might change to soon to a better way on controlling this
+    
+        
+
+        
         
         
         if self.block_fits() == False:
